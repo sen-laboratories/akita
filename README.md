@@ -1,11 +1,18 @@
 <p align="center">
-  <img src="images/sen-tracker-logo.jpg" width=360 />
+  <img src="images/akita-logo.webp" width=360 />
 </p>
 
-<h1 align="center">SEN Tracker</h1>
+<h1 align="center">Akita</h1>
+<h2 align="center">
+  <strong>A</strong>dvanced 
+  <strong>K</strong>nowledge
+  <strong>I</strong>nterface for
+  <strong>T</strong>racker
+  <strong>A</strong>wakened
+</h2>
 
 <p align="center">
-  A semantic take on Tracker, the Haiku file manager. Keeps changes to a sane level and tries to "just" blend in but offer some magic SEN sprinkle dust.
+  A semantic take on Tracker, the Haiku file manager. Keeps changes to a sane level and tries to "just" blend in but offer some semantic sprinkle dust.
 </p>
 
 # About
@@ -14,13 +21,15 @@ This repository contains the changes to Haiku Tracker for integrating with SEN a
 
 # Build
 
-Tracker is part of Haiku, so as to not complicate things, SEN specific adaptations are kept within a fork of the Haiku source.
+Tracker is part of Haiku, so as to not complicate things, SEN specific adaptations are currently kept within a fork of the Haiku source.
 For building, you need to check out (for trying out) or fork (for development) haiku first.
+This will soon be packaged as a proper Haiku package (HPKG) and included out of the box in the 
+[SENryu distro](https://codeberg.org/senlabs/senryu).
 
 Adapt the variable(s) at the start of the scripts according to your setup.
 Then run:
 * `./build.sh` -- builds Tracker in the original haiku sourcetree and copies over relevant artifacts to `./generated`
-* `./start.sh` -- stops system Tracker and launches the custom Tracker in all its semantic glory!
+* `./start.sh` -- stops system Tracker and launches the custom Akita fork in all its semantic glory!
 
 The `build` script uses `jam`'s `-j` option to build with all available cores by default, feel free to adapt to your needs.
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-cd generated && ./Tracker
+cd bin && ./Akita

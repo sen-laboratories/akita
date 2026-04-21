@@ -18,7 +18,8 @@ else
   exit 1;
 fi
 
-printf "copying over Tracker and libs...\n"
+printf "copying over as Akita and SEN libs...\n"
 
-cp $HAIKU_OUT_DIR/kits/tracker/libtracker.so ./generated/lib/ && \
-cp $HAIKU_OUT_DIR/apps/tracker/Tracker ./generated/Tracker
+cp $HAIKU_OUT_DIR/kits/tracker/libtracker.so ./bin/lib/ && \
+cp $HAIKU_OUT_DIR/apps/tracker/Tracker ./bin/Tracker
+
