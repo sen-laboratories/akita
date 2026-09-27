@@ -4,11 +4,11 @@
 
 <h1 align="center">Akita</h1>
 <h2 align="center">
-  <strong>A</strong>dvanced 
+  <strong>A</strong>ugmented 
   <strong>K</strong>nowledge
   <strong>I</strong>nterface for
   <strong>T</strong>racker
-  <strong>A</strong>wakened
+  <strong>A</strong>dvanced
 </h2>
 
 <p align="center">
