@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2025-2026 SEN Labs e.U.
 TRACKER_SRC_DIR=$HOME/Develop/haiku/src/kits/tracker
 HAIKU_OUT_DIR=$HOME/Develop/haiku/generated/objects/haiku/x86_64/release
 
