@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/akita-logo.webp" width=360 />
+  <img src="images/akita-logo.jpg" width=320 />
 </p>
 
 <h1 align="center">Akita</h1>

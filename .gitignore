@@ -38,3 +38,4 @@ generated/*
 
 # for now
 examples/*
+.DS_Store
