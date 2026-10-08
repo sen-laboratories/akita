@@ -8,7 +8,7 @@
   <strong>K</strong>nowledge
   <strong>I</strong>nterface for
   <strong>T</strong>racker
-  <strong>A</strong>dvanced
+  <strong>A</strong>ssociations
 </h2>
 
 <p align="center">
