@@ -9,7 +9,8 @@ to, see the contents of a PDF or a source file as a tree, and work with
 classifications and contexts. It looks and works like Tracker, and uses
 the SEN server (package sen_core) for the relations. The command akita switches
 between Akita and the stock Tracker; the package makes Akita start in the place
-of Tracker at the next login."
+of Tracker at the next login (a file for the launch daemon, which the Settings of
+SEN or \"akita disable\" can undo)."
 packager		"Gregor B. Rosenauer <semantic.extensions@gmail.com>"
 vendor			"SEN Labs e.U."
 copyrights		{
@@ -34,7 +35,4 @@ requires		{
 }
 post-install-scripts	{
 	"data/akita/post-install.sh"
-}
-pre-uninstall-scripts	{
-	"data/akita/pre-uninstall.sh"
 }

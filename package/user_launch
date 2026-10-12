@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2026 SEN Labs e.U.
+#
+# Akita instead of Tracker at login: the service of Tracker is disabled and Akita (it has the signature of Tracker) is started in its place, as a
+# service of the launch daemon. "akita disable" (or the Settings of SEN) puts a file in ~/config/settings/launch that undoes this.
+# (A file that redefines "launch" of the service of Tracker does not work: that of the system wins.)
+
+service x-vnd.Be-TRAK {
+	disabled true
+}
+
+service x-vnd.sen-labs.akita {
+	launch /boot/system/apps/Akita/Akita
+	legacy
+	on initial_volumes_mounted
+}

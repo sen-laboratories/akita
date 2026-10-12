@@ -28,23 +28,28 @@ pkgman add-repo https://kiri.sen-labs.org/x86_64      # once
 pkgman install akita
 ```
 
-The package puts Akita in `apps/Akita` (with its own `libtracker.so`, which the app finds in its `lib` folder) and adds a block to your `UserBootscript` that starts Akita
-instead of the stock Tracker at the next login (it does nothing if Akita is not installed). The command `akita` does this and more:
+The package puts Akita in `apps/Akita` (with its own `libtracker.so`, which the app finds in its `lib` folder) and a file for the launch daemon
+(`data/user_launch/akita`) that disables the service of the stock Tracker and starts Akita in its place at the next login. (A file that only changes the
+`launch` line of the Tracker service does not work, the one of the system wins: so Tracker is disabled and Akita is a service of its own.) The command `akita`
+switches at once and undoes it:
 
 ```sh
 akita start        # switch now: stops the stock Tracker (a service of the launch daemon) and starts Akita
 akita stop         # back to the stock Tracker now
-akita enable       # Akita instead of Tracker at every login (what the package does when it is installed)
-akita disable      # the stock Tracker at the next login (what the package does when it is removed)
+akita enable       # Akita instead of Tracker at every login (the default of the package)
+akita disable      # the stock Tracker at every login: a file ~/config/settings/launch/akita (read after the files of packages), "akita enable" removes it
 akita status
 ```
+
+The same switch is the setting *Use Akita instead of Tracker* in the Settings of the SEN item in the Deskbar. The old versions of the package started Akita from
+a block in the UserBootscript: installing this one removes that block.
 
 Akita has the signature of Tracker, so only one of them runs at a time.
 
 # Package
 
 `./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
-`REVISION=2 ./package.sh` for a new revision. The scripts that the package installs are in `package/`.
+`REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`.
 
 # SEN FileTypes
 

@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 SEN Labs e.U.
 #
-# Run when the package is installed: Akita replaces Tracker at the next login (a block in the UserBootscript). Tracker is not touched now: "akita start"
-# switches at once. If the script cannot do it (the package is installed for somebody else), "akita enable" does it later.
+# Run when the package is installed: the block that the old versions put in the UserBootscript goes (the launch daemon starts Akita now).
+# Nothing is switched now: "akita start" does it at once, else it happens at the next login.
 here=$(cd "$(dirname "$0")" && pwd)
-"$here/../../bin/akita" enable >/dev/null 2>&1
+"$here/../../bin/akita" cleanup >/dev/null 2>&1
 exit 0
