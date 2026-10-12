@@ -46,6 +46,10 @@ Akita has the signature of Tracker, so only one of them runs at a time.
 `./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
 `REVISION=2 ./package.sh` for a new revision. The scripts that the package installs are in `package/`.
 
+# SEN FileTypes
+
+`filetypes/` has the package `sen_filetypes`: the FileTypes preference of senryu (searchable attributes, opens a type or attribute when SEN asks) as *SEN FileTypes* beside the one of Haiku. See `filetypes/README.md`.
+
 # Build
 
 Tracker is part of Haiku, so as to not complicate things, SEN specific adaptations are currently kept within a fork of the Haiku source.

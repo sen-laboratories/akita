@@ -1,0 +1,30 @@
+name			sen_filetypes
+version			@VERSION@
+architecture	@ARCH@
+summary			"The FileTypes preference of SEN, which shows the types and attributes of its ontologies"
+description		"FileTypes of SEN is FileTypes, the preference of Haiku for the file types, extended
+with what SEN (Semantic Extensions Native) needs: searchable attributes (with the
+index on every volume, created and removed when asked), and a way for SEN to open
+a type or one of its attributes directly (the Ontologies menu of SEN in the Deskbar).
+It is installed as the preference \"SEN FileTypes\" next to the one of Haiku, with a
+signature of its own: both can run, and nothing of Haiku is replaced."
+packager		"Gregor B. Rosenauer <semantic.extensions@gmail.com>"
+vendor			"SEN Labs e.U."
+copyrights		{
+	"2002-2026 Haiku, Inc."
+	"2026 SEN Labs e.U."
+}
+licenses		{
+	"MIT"
+}
+urls			{
+	"https://sen-labs.org"
+	"https://github.com/sen-laboratories/akita"
+}
+provides		{
+	sen_filetypes = @VERSION@
+	app:SENFileTypes = @VERSION@
+}
+requires		{
+	haiku
+}
