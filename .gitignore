@@ -39,3 +39,7 @@ generated/*
 # for now
 examples/*
 .DS_Store
+
+# packages
+*.hpkg
+package-build/

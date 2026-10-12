@@ -1,0 +1,151 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2026 SEN Labs e.U.
+#
+# akita: puts Akita, the Tracker of SEN, in the place of the stock Tracker of Haiku, and back.
+#
+#   akita enable     starts Akita instead of Tracker at every login (a block in your UserBootscript, which "akita disable" removes again)
+#   akita disable    removes that block; the stock Tracker is started at the next login
+#   akita start      switch now: stops the stock Tracker and starts Akita
+#   akita stop       switch back now: quits Akita and starts the stock Tracker
+#   akita status     what is installed, enabled and running
+#
+# The stock Tracker is a service of the launch daemon, which restarts it when it quits: so it is stopped as a service (launch_roster).
+# Akita has the signature of Tracker (only one of them can run). If Akita is not installed (any more), the login does nothing and the stock Tracker stays.
+
+BEGIN="# >>> Akita >>>"
+END="# <<< Akita <<<"
+SERVICE=x-vnd.be-trak
+SIGNATURE=application/x-vnd.Be-TRAK
+
+settings=$(finddir B_USER_SETTINGS_DIRECTORY)
+bootscript=${AKITA_BOOTSCRIPT:-$settings/boot/UserBootscript}		# (the variable is for tests)
+
+# the Akita that is installed (for the system or for the user)
+find_akita()
+{
+	local path
+	for path in "$(finddir B_SYSTEM_APPS_DIRECTORY)/Akita/Akita" "$(finddir B_USER_APPS_DIRECTORY)/Akita/Akita"; do
+		if [ -x "$path" ]; then
+			echo "$path"
+			return 0
+		fi
+	done
+	return 1
+}
+
+block_present()
+{
+	[ -f "$bootscript" ] && grep -qF "$BEGIN" "$bootscript"
+}
+
+enable()
+{
+	if block_present; then
+		echo "Akita is already enabled."
+		return 0
+	fi
+	mkdir -p "$(dirname "$bootscript")"
+	[ -f "$bootscript" ] || : > "$bootscript"
+	# (the block is at the end, with a line break before it)
+	{
+		printf '\n%s\n' "$BEGIN"
+		cat <<'BLOCK'
+# Starts Akita, the Tracker of SEN, instead of the stock Tracker. Managed by the command "akita" ("akita disable" removes this block).
+# Nothing happens if Akita is not installed (any more): the stock Tracker stays.
+for akita in /boot/system/bin/akita /boot/home/config/bin/akita; do
+	if [ -x "$akita" ]; then
+		"$akita" start --boot &
+		break
+	fi
+done
+BLOCK
+		printf '%s\n' "$END"
+	} >> "$bootscript"
+	echo "Akita is enabled: it replaces Tracker at the next login (or now: akita start)."
+}
+
+disable()
+{
+	if ! block_present; then
+		echo "Akita is not enabled."
+		return 0
+	fi
+	# the block, and the empty line before it
+	local temp
+	temp=$(mktemp "${TMPDIR:-/tmp}/akita.XXXXXX") || return 1
+	awk -v begin="$BEGIN" -v end="$END" '
+		index($0, begin) == 1 { skip = 1 }
+		!skip { lines[++n] = $0 }
+		skip && index($0, end) == 1 { skip = 0 }
+		END {
+			while (n > 0 && lines[n] == "") n--
+			for (i = 1; i <= n; i++) print lines[i]
+		}' "$bootscript" > "$temp" && cat "$temp" > "$bootscript"
+	rm -f "$temp"
+	echo "Akita is disabled: the stock Tracker is started at the next login."
+}
+
+# is a Tracker (the stock one or Akita) running? (its signature is the same)
+tracker_running()
+{
+	hey "$SIGNATURE" COUNT Window >/dev/null 2>&1
+}
+
+start()
+{
+	local akita
+	akita=$(find_akita) || { echo "Akita is not installed." >&2; return 1; }
+
+	# at login the stock Tracker may not be up yet: wait for it (up to 30 seconds), else it would start after us
+	if [ "$1" = --boot ]; then
+		local i
+		for i in $(seq 1 30); do
+			launch_roster list 2>/dev/null | grep -q "$SERVICE.*running" && break
+			sleep 1
+		done
+	fi
+
+	launch_roster stop $SERVICE >/dev/null 2>&1
+	# the signature is free when the stock Tracker is gone
+	local i
+	for i in $(seq 1 20); do
+		tracker_running || break
+		sleep 0.5
+	done
+	"$akita" >/dev/null 2>&1 &
+	echo "Akita started."
+}
+
+stop()
+{
+	hey "$SIGNATURE" quit >/dev/null 2>&1
+	local i
+	for i in $(seq 1 20); do
+		tracker_running || break
+		sleep 0.5
+	done
+	launch_roster start $SERVICE >/dev/null 2>&1
+	echo "The stock Tracker is started."
+}
+
+status()
+{
+	local akita
+	if akita=$(find_akita); then echo "installed:  $akita"; else echo "installed:  no"; fi
+	if block_present; then echo "enabled:    yes (UserBootscript)"; else echo "enabled:    no"; fi
+	if launch_roster list 2>/dev/null | grep -q "$SERVICE.*running"; then echo "running:    the stock Tracker (service $SERVICE)"; \
+	elif tracker_running; then echo "running:    Akita (or a Tracker that was started by hand)"; else echo "running:    no Tracker"; fi
+}
+
+case "$1" in
+	enable) enable;;
+	disable) disable;;
+	start) start "$2";;
+	stop) stop;;
+	status) status;;
+	*)
+		sed -n '6,15p' "$0" | sed 's/^# \{0,1\}//'
+		[ -z "$1" ] || [ "$1" = --help ] || exit 1;;
+esac

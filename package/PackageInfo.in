@@ -1,0 +1,40 @@
+name			akita
+version			@VERSION@
+architecture	@ARCH@
+summary			"The Tracker of SEN, a file manager that shows the relations of files"
+description		"Akita is Tracker, the file manager of Haiku, extended with what SEN (Semantic
+Extensions Native) adds: relations between files. Drag a file onto another
+with the Command key held to relate them, open the files that a file is related
+to, see the contents of a PDF or a source file as a tree, and work with
+classifications and contexts. It looks and works like Tracker, and uses
+the SEN server (package sen_core) for the relations. The command akita switches
+between Akita and the stock Tracker; the package makes Akita start in the place
+of Tracker at the next login."
+packager		"Gregor B. Rosenauer <semantic.extensions@gmail.com>"
+vendor			"SEN Labs e.U."
+copyrights		{
+	"1991-2001 Be, Inc."
+	"2002-2026 Haiku, Inc."
+	"2024-2026 SEN Labs e.U."
+}
+licenses		{
+	"MIT"
+}
+urls			{
+	"https://sen-labs.org"
+	"https://github.com/sen-laboratories/akita"
+}
+provides		{
+	akita = @VERSION@
+	app:Akita = @VERSION@
+	cmd:akita = @VERSION@
+}
+requires		{
+	haiku
+}
+post-install-scripts	{
+	"data/akita/post-install.sh"
+}
+pre-uninstall-scripts	{
+	"data/akita/pre-uninstall.sh"
+}

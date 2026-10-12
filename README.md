@@ -19,11 +19,38 @@
 
 This repository contains the changes to Haiku Tracker for integrating with SEN and providing support for linked semantic navigation and file manipulation.
 
+# Install
+
+Akita is a package in the SEN Labs repository, [Kiri](https://kiri.sen-labs.org):
+
+```sh
+pkgman add-repo https://kiri.sen-labs.org/x86_64      # once
+pkgman install akita
+```
+
+The package puts Akita in `apps/Akita` (with its own `libtracker.so`, which the app finds in its `lib` folder) and adds a block to your `UserBootscript` that starts Akita
+instead of the stock Tracker at the next login (it does nothing if Akita is not installed). The command `akita` does this and more:
+
+```sh
+akita start        # switch now: stops the stock Tracker (a service of the launch daemon) and starts Akita
+akita stop         # back to the stock Tracker now
+akita enable       # Akita instead of Tracker at every login (what the package does when it is installed)
+akita disable      # the stock Tracker at the next login (what the package does when it is removed)
+akita status
+```
+
+Akita has the signature of Tracker, so only one of them runs at a time.
+
+# Package
+
+`./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
+`REVISION=2 ./package.sh` for a new revision. The scripts that the package installs are in `package/`.
+
 # Build
 
 Tracker is part of Haiku, so as to not complicate things, SEN specific adaptations are currently kept within a fork of the Haiku source.
 For building, you need to check out (for trying out) or fork (for development) haiku first.
-This will soon be packaged as a proper Haiku package (HPKG) and included out of the box in the 
+It is packaged as a Haiku package (HPKG), see below, and is to be included out of the box in the
 [SENryu distro](https://codeberg.org/senlabs/senryu).
 
 Adapt the variable(s) at the start of the scripts according to your setup.
