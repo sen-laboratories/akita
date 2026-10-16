@@ -12,7 +12,7 @@ cd "$(dirname "$0")"
 
 [ -f bin/Akita ] && [ -f bin/lib/libtracker.so ] || { echo "bin/Akita and bin/lib/libtracker.so not found, run build.sh and install.sh first" >&2; exit 1; }
 
-VERSION="${AKITA_VERSION:-1.0.0~dev}-${REVISION:-1}"
+VERSION="${AKITA_VERSION:-1.0.0~${SEN_VERSION_SUFFIX:-dev}}-${REVISION:-1}"
 ARCH=$(getarch)
 STAGE=package-build
 rm -rf $STAGE

@@ -13,7 +13,7 @@ cd "$(dirname "$0")"
 BINARY=${FILETYPES:-../bin/FileTypes}
 [ -f "$BINARY" ] || { echo "$BINARY not found, build FileTypes in the tree of senryu first" >&2; exit 1; }
 
-VERSION="${FILETYPES_VERSION:-1.0.0~dev}-${REVISION:-1}"
+VERSION="${FILETYPES_VERSION:-1.0.0~${SEN_VERSION_SUFFIX:-dev}}-${REVISION:-1}"
 ARCH=$(getarch)
 STAGE=package-build
 rm -rf $STAGE
