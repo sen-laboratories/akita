@@ -36,6 +36,7 @@ switches at once and undoes it:
 ```sh
 akita start        # switch now: stops the stock Tracker (a service of the launch daemon) and starts Akita
 akita stop         # back to the stock Tracker now
+akita restart      # quits the Tracker that runs and starts it again
 akita enable       # Akita instead of Tracker at every login (the default of the package)
 akita disable      # the stock Tracker at every login: a file ~/config/settings/launch/akita (read after the files of packages), "akita enable" removes it
 akita status

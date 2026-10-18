@@ -9,6 +9,7 @@
 #   akita disable    the stock Tracker at every login (a file in ~/config/settings/launch that switches the services of the launch daemon back)
 #   akita start      switch now: stops the stock Tracker and starts Akita
 #   akita stop       switch back now: quits Akita and starts the stock Tracker
+#   akita restart    quits the Tracker that runs (Akita, or the stock one) and starts it again
 #   akita status     what is installed, enabled and running
 #
 # The package has a file for the launch daemon (data/user_launch/akita) that disables the service of Tracker and starts Akita in its place at login.
@@ -129,7 +130,21 @@ start()
 	if ! { has_service $AKITA_SERVICE && launch_roster start $AKITA_SERVICE >/dev/null 2>&1; }; then
 		"$akita" >/dev/null 2>&1 &
 	fi
-	echo "Akita started."
+	echo "Akita ${1:-started}."
+}
+
+# the Tracker that runs is started again (the stock one if that is what runs, else Akita)
+restart()
+{
+	if service_running $TRACKER_SERVICE; then
+		launch_roster stop $TRACKER_SERVICE >/dev/null 2>&1
+		hey "$SIGNATURE" quit >/dev/null 2>&1
+		wait_until_gone
+		launch_roster start $TRACKER_SERVICE >/dev/null 2>&1
+		echo "The stock Tracker is restarted."
+	else
+		start restarted
+	fi
 }
 
 stop()
@@ -159,9 +174,10 @@ case "$1" in
 	# (the block of the old versions did "akita start --boot": the launch daemon does that now, so it does nothing)
 	start) [ "$2" = --boot ] || start;;
 	stop) stop;;
+	restart) restart;;
 	status) status;;
 	cleanup) remove_old_hook;;
 	*)
-		sed -n '6,12p' "$0" | sed 's/^# \{0,1\}//'
+		sed -n '6,13p' "$0" | sed 's/^# \{0,1\}//'
 		[ -z "$1" ] || [ "$1" = --help ] || exit 1;;
 esac
