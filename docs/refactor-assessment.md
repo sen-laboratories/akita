@@ -129,3 +129,33 @@ clarification, not yet decided.
 - Whether/where `Sen.h`/`Sensei.h` should live in-repo.
 - No refactoring branch created yet — per project convention (see
   `CLAUDE.md`), branch only after the proposal is confirmed.
+
+## Notes for Akita 2.0 (collected while stabilising 1.0)
+
+Akita 2.0 is the version in which the Tracker fork goes its own way (a large refactor, not patches on top of Haiku's Tracker). What the 1.0 work showed that
+the new structure has to solve:
+
+1. **One list for the Attributes menu and the columns.** Both show the properties of the types that are in a view, but they are built by separate code
+   (`BContainerWindow::AddMimeMenu`/`AddMimeTypesToMenu` for the menu, `BPoseView::SetupRelationColumns` for the default columns), and they drifted apart:
+   the "All relations" folder had the properties of the generic reference as columns, but the menu only listed the types of the files that were in the view
+   (found as "Year"). Needed: a function that takes the view (the folder, its files, the types that a dropped file can become) and returns the ordered list
+   of (type, attribute info) that both the menu and the default columns read. Relation types, MIME types and the semantic types of the SEN registry
+   (`sen::types::Registry`, along the chain of what a type conforms to) come in through the same list.
+2. **What is a relation view.** Stored relation folders are registered in `RelationFolders`; the views of self relations (contained: a TOC), dynamic
+   relations and nested folders are not, they are only folders below `<tmp>/sen/<view>/`. Behaviour that belongs to every relation view (a file that is
+   dragged out is copied and is a deep link, titles, columns, icons, no editing of what a plugin made) was written for one of the two kinds and had to be
+   repeated for the other. Needed: one concept (a view with a kind: stored, all, self, dynamic) that the pose view asks, instead of lookups by folder.
+3. **Deep links.** A file of a relation view is the relation (target, selector, properties). Dragged out of the view it is copied and stays a link; the
+   original stays (only the Trash removes a stored relation). This holds for stored and for self relations, and later for the files of any view that stands
+   for something else (queries, classifications).
+4. **"Open related..." is the root of all relations.** Choosing the menu itself opens one view with all the relations of the file: the stored ones, and the
+   self relations at their root level (a PDF shows the top level of its TOC), as the menu of a folder opens the folder with its children. The menus of the
+   types open one type. "Open contained..." stays, since its relations are always extracted by a plugin and need a hierarchy.
+5. **Code that reads a type before it checks what the entry is.** `TemplateUtils::GetInstalledTemplates` asked a folder for its MIME type first, which it
+   does not have: the buffer was garbage and a template folder was skipped at random ("New related..." had no targets for books). Audit every
+   `GetType()` call: initialise the buffer, check `IsDirectory()` first.
+6. **Tests without a window.** The relation folders, the template search and the drop logic are tested outside of the GUI (`sen-core/tests/vm/tracker-folders.sh`
+   compiles them with a test); the menu and column code is not testable that way, which is how the mismatch in 1 got through. The new structure keeps menus
+   and columns as functions of data (item 1) so that they can be tested like that.
+7. **Settings and legacy state.** Akita must not depend on the server's settings of older versions (`association/` types of old contexts, old keys of the
+   settings): the server migrates, Akita shows what the types say.
