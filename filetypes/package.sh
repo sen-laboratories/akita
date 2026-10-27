@@ -23,6 +23,8 @@ cp -a "$BINARY" "$STAGE/preferences/SEN FileTypes"
 cp ../LICENSE $STAGE/documentation/packages/sen_filetypes/
 cp README.md $STAGE/documentation/packages/sen_filetypes/
 
+# Akita links against private classes of Haiku (libbe) and is built from the tree of senryu (a base before hrev60299, see 2.0.0 for the nightlies): the
+# package requires the Haiku revisions it was built for (see the requires in filetypes/PackageInfo.in), otherwise it fails to load.
 sed -e "s|@VERSION@|$VERSION|g" -e "s|@ARCH@|$ARCH|g" PackageInfo.in > $STAGE/.PackageInfo
 
 PACKAGE=../sen_filetypes-$VERSION-$ARCH.hpkg
