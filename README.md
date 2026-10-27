@@ -65,7 +65,7 @@ It is packaged as a Haiku package (HPKG), see below, and is to be included out o
 
 Adapt the variable(s) at the start of the scripts according to your setup.
 Then run:
-* `./build.sh` -- builds Tracker in the original haiku sourcetree and copies over relevant artifacts to `./generated`
+* `./build.sh` -- builds Tracker in the tree of senryu (`HAIKU_ROOT`, default `/Develop/SEN/senryu`) and copies the result to `bin/` (`bin/Akita`, `bin/lib/libtracker.so`) with `./install.sh`
 * `./start.sh` -- stops system Tracker and launches the custom Akita fork in all its semantic glory!
 
 The `build` script uses `jam`'s `-j` option to build with all available cores by default, feel free to adapt to your needs.
