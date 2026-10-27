@@ -12,7 +12,8 @@ cd "$(dirname "$0")"
 
 [ -f bin/Akita ] && [ -f bin/lib/libtracker.so ] || { echo "bin/Akita and bin/lib/libtracker.so not found, run build.sh and install.sh first" >&2; exit 1; }
 
-VERSION="${AKITA_VERSION:-2.0.0~${SEN_VERSION_SUFFIX:-develop.1}}-${REVISION:-1}"
+# (revision 2: an ontology opens as the folder of its Dependency relations, an item of a relation menu opens its target)
+VERSION="${AKITA_VERSION:-2.0.0~${SEN_VERSION_SUFFIX:-develop.1}}-${REVISION:-2}"
 ARCH=$(getarch)
 STAGE=package-build
 rm -rf $STAGE
