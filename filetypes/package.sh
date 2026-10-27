@@ -2,16 +2,17 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 SEN Labs e.U.
 #
-# Builds the HPKG of the FileTypes of SEN from the build of senryu (FILETYPES, default ../bin/FileTypes: build it with
-# sento/tools/tracker-vm-build.sh and BUILD_DIR=src/preferences/filetypes BUILD_TARGET=FileTypes). The package is written to the repository root;
-# REVISION overrides the revision (default 1), FILETYPES_VERSION the version.
+# Builds the HPKG of the FileTypes of SEN from the build of senryu (FILETYPES, default ../bin/FileTypes: ./build.sh builds it in the tree of senryu and
+# copies it there, it is run here if the file is missing). The package is written to the repository root; REVISION overrides the revision (default 1),
+# FILETYPES_VERSION the version.
 #
 # It is a preference of its own, "SEN FileTypes", next to the FileTypes of Haiku (it has another signature, so both can run).
 set -e
 cd "$(dirname "$0")"
 
 BINARY=${FILETYPES:-../bin/FileTypes}
-[ -f "$BINARY" ] || { echo "$BINARY not found, build FileTypes in the tree of senryu first" >&2; exit 1; }
+[ -f "$BINARY" ] || [ -n "$FILETYPES" ] || ./build.sh || exit 1
+[ -f "$BINARY" ] || { echo "$BINARY not found, ./build.sh builds FileTypes in the tree of senryu" >&2; exit 1; }
 
 VERSION="${FILETYPES_VERSION:-1.0.0~${SEN_VERSION_SUFFIX:-dev}}-${REVISION:-1}"
 ARCH=$(getarch)

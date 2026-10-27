@@ -12,4 +12,4 @@ where it shows a type if it is installed (the setting *Use the FileTypes of SEN*
 pkgman install sen_filetypes     # from Kiri, https://kiri.sen-labs.org
 ```
 
-`./package.sh` makes the package from `../bin/FileTypes` (`REVISION=2 ./package.sh` for a new revision).
+`./build.sh` builds FileTypes in the tree of senryu (`HAIKU_ROOT`, default `/Develop/SEN/senryu`) and copies it to `../bin/FileTypes`; `./package.sh` makes the package from it (and runs `./build.sh` if the file is missing; `REVISION=2 ./package.sh` for a new revision).
