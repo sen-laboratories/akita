@@ -28,6 +28,8 @@ chmod 755 $STAGE/bin/akita $STAGE/data/akita/*.sh
 ln -s ../../../../apps/Akita/Akita $STAGE/data/deskbar/menu/Applications/Akita
 cp README.md LICENSE $STAGE/documentation/packages/akita/
 
+# Akita links against private classes of Haiku (libbe) and is built from the tree of senryu, which is merged with the nightly it is built on: the package
+# requires the nightlies from the change of BPrivate::JobQueue on (see the requires in package/PackageInfo.in, and abi-check.sh), otherwise it fails to load.
 sed -e "s|@VERSION@|$VERSION|g" -e "s|@ARCH@|$ARCH|g" package/PackageInfo.in > $STAGE/.PackageInfo
 
 PACKAGE=akita-$VERSION-$ARCH.hpkg

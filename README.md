@@ -53,8 +53,9 @@ Akita has the signature of Tracker, so only one of them runs at a time.
 `REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`. `./build.sh` stops with an error when the build fails (a command of jam is
 `jam -qj4 Tracker`: the options come before the target).
 
-**Haiku version.** Akita links against private classes of Haiku (`libbe`), so a package works with the Haiku that it was built with. The packages of 1.0 require `haiku >= r1~beta6` and `haiku < r1~beta6_hrev60299` (the nightly
-of hrev60299 changed `BPrivate::JobQueue`, and a `libtracker.so` from before it does not load: the desktop is left without a file manager); `pkgman` refuses to install them on a Haiku that does not fit.
+**Haiku version.** Akita links against private classes of Haiku (`libbe`), so a package works with the Haiku that it was built with. SEN follows the nightlies: the packages are built on a recent nightly and require `haiku >= r1~beta6_hrev60299_1` (the nightly hrev60299_3 gave `BPrivate::JobQueue` a constructor with a parameter, and a `libtracker.so` built before it does not load); there is no upper limit, so `pkgman` does not hold your Haiku back. Haiku compares the pre-release part of a version as text (`_11` is *less* than `_3`), which is why the bound is the `_1`. When a nightly breaks Akita, `abi-check.sh` says so before anybody installs it (see below), and a new build follows.
+
+**ABI check.** `./abi-check.sh [-l <folder with libraries>]... <file>...` lists the symbols that a program or library needs and the libraries of a Haiku do not have, without starting anything (`bin/Akita`, `bin/lib/libtracker.so` against the Haiku that runs, or against the libraries of a nightly that was unpacked with `package extract`). `.github/workflows/nightly.yml` runs it every day against the newest nightly and the packages of Kiri.
 
 # What SEN adds
 

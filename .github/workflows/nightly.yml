@@ -1,0 +1,61 @@
+name: Akita against the newest Haiku nightly
+
+# Akita uses private classes of Haiku: a nightly can take away what it needs (hrev60299_3 did, BPrivate::JobQueue). Every day this takes the newest nightly and the
+# Akita and FileTypes packages of Kiri, and checks that every symbol that they need is there (abi-check.sh). It fails, and GitHub tells the owner, when one is missing.
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  abi-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch Haiku host tools (package, package_repo)
+        run: |
+          mkdir -p bin
+          curl -sL https://raw.githubusercontent.com/haiku/haiku-toolchains-ubuntu/master/fetch.sh -o fetch.sh
+          chmod +x fetch.sh
+          HOSTTOOLS_URL=$(./fetch.sh --hosttools)
+          curl -sL "$HOSTTOOLS_URL" -o hosttools.zip
+          unzip -q hosttools.zip -d bin/
+          chmod +x bin/*
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+          echo "LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+      - name: Fetch the newest nightly, its runtime libraries and the packages of Kiri
+        run: |
+          set -e
+          HAIKU=https://eu.hpkg.haiku-os.org/haiku/master/x86_64/current
+          PORTS=https://eu.hpkg.haiku-os.org/haikuports/master/x86_64/current
+          KIRI=https://kiri.sen-labs.org/x86_64
+          mkdir -p dl nightly pkg
+          # the names of the packages are in the index of the repository
+          curl -sfL $HAIKU/repo -o dl/haiku.repo
+          curl -sfL $PORTS/repo -o dl/ports.repo
+          curl -sfL $KIRI/repo -o dl/kiri.repo
+          newest() { package_repo list -f "$1" | grep -E "^$2-[0-9r]" | sort -V | tail -1; }
+          HAIKU_PKG=$(newest dl/haiku.repo haiku)
+          GCC_PKG=$(newest dl/ports.repo gcc_syslibs)
+          AKITA_PKG=$(newest dl/kiri.repo akita)
+          TYPES_PKG=$(newest dl/kiri.repo sen_filetypes)
+          echo "haiku: $HAIKU_PKG, gcc_syslibs: $GCC_PKG, akita: $AKITA_PKG, sen_filetypes: $TYPES_PKG" | tee -a $GITHUB_STEP_SUMMARY
+          curl -sfL "$HAIKU/packages/$HAIKU_PKG" -o "dl/$HAIKU_PKG"
+          curl -sfL "$PORTS/packages/$GCC_PKG" -o "dl/$GCC_PKG"
+          curl -sfL "$KIRI/packages/$AKITA_PKG" -o "dl/$AKITA_PKG"
+          curl -sfL "$KIRI/packages/$TYPES_PKG" -o "dl/$TYPES_PKG"
+          package extract -C nightly "dl/$HAIKU_PKG" lib
+          package extract -C nightly "dl/$GCC_PKG" lib
+          package extract -C pkg "dl/$AKITA_PKG" apps
+          mkdir -p pkg/types && package extract -C pkg/types "dl/$TYPES_PKG" apps
+
+      - name: Check
+        run: |
+          set -e
+          ls nightly/lib | head -50
+          # the programs and the libraries that come with them, against the libraries of the nightly
+          ./abi-check.sh -l nightly/lib -l pkg/apps/Akita/lib pkg/apps/Akita/Akita pkg/apps/Akita/lib/libtracker.so
+          for f in pkg/types/apps/*/*; do [ -f "$f" ] && [ -x "$f" ] && ./abi-check.sh -l nightly/lib -l pkg/apps/Akita/lib "$f"; done

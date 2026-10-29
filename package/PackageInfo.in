@@ -31,7 +31,7 @@ provides		{
 	cmd:akita = @VERSION@
 }
 requires		{
-	haiku
+	haiku >= r1~beta6_hrev60299_1
 }
 post-install-scripts	{
 	"data/akita/post-install.sh"
