@@ -45,17 +45,19 @@ jobs:
           curl -sfL "$KIRI/packages/$AKITA_PKG" -o "dl/$AKITA_PKG"
           curl -sfL "$KIRI/packages/$TYPES_PKG" -o "dl/$TYPES_PKG"
           package extract -C nightly "dl/$HAIKU_PKG" lib
-          package extract -C pkg "dl/$AKITA_PKG" apps
-          mkdir -p pkg/types && package extract -C pkg/types "dl/$TYPES_PKG" apps
+          mkdir -p pkg/akita pkg/types
+          package extract -C pkg/akita "dl/$AKITA_PKG"
+          package extract -C pkg/types "dl/$TYPES_PKG"
 
       - name: Check
         run: |
           set -e
           ls nightly/lib | head -50
-          # the runtime of the compiler (libgcc_s, libstdc++) is the package gcc_syslibs, not part of the nightly
-          RUNTIME='^(__cxa_|__gxx_|_Unwind_|__register_frame|__deregister_frame|_ZSt|_ZNSt|_ZNKSt|_ZTVSt|_ZTISt|_ZTSSt|_ZTVN10__cxxabiv|_ZTIN10__cxxabiv|_ZTSN10__cxxabiv)'
-          # the programs and the libraries that come with them, against the libraries of the nightly
-          ./abi-check.sh -i "$RUNTIME" -l nightly/lib -l pkg/apps/Akita/lib pkg/apps/Akita/Akita pkg/apps/Akita/lib/libtracker.so
-          for f in pkg/types/apps/*/*; do
-            if [ -f "$f" ] && [ -x "$f" ]; then ./abi-check.sh -i "$RUNTIME" -l nightly/lib -l pkg/apps/Akita/lib "$f"; fi
-          done
+          # the runtime of the compiler (libgcc_s, libstdc++: std::, operator new and delete, typeinfo of the basic types) is the package gcc_syslibs, not part of the nightly
+          RUNTIME='^(__cxa_|__gxx_|__dynamic_cast|_Unwind_|__register_frame|__deregister_frame|_ZN?K?S[a-z]|_ZTVSt|_ZTISt|_ZTSSt|_ZTTSt|_ZTVN10__cxxabiv|_ZTIN10__cxxabiv|_ZTI[a-z]$|_Zd[al]Pv|_Zn[aw][mj])'
+          # every program and library of the packages, against the libraries of the nightly and the libraries that come with the packages
+          LIBS=""
+          for d in $(find pkg -type d -name lib); do LIBS="$LIBS -l $d"; done
+          FILES=$(find pkg -type f -exec sh -c 'head -c4 "$1" | grep -q ELF && echo "$1"' _ {} \;)
+          echo "$FILES"
+          ./abi-check.sh -i "$RUNTIME" -l nightly/lib $LIBS $FILES
