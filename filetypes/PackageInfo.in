@@ -26,6 +26,5 @@ provides		{
 	app:SENFileTypes = @VERSION@
 }
 requires		{
-	haiku >= r1~beta6
-	haiku < r1~beta6_hrev60299
+	haiku >= r1~beta6_hrev60299_1
 }
