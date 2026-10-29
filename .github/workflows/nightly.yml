@@ -58,6 +58,7 @@ jobs:
           # every program and library of the packages, against the libraries of the nightly and the libraries that come with the packages
           LIBS=""
           for d in $(find pkg -type d -name lib); do LIBS="$LIBS -l $d"; done
-          FILES=$(find pkg -type f -exec sh -c 'head -c4 "$1" | grep -q ELF && echo "$1"' _ {} \;)
-          echo "$FILES"
-          ./abi-check.sh -i "$RUNTIME" -l nightly/lib $LIBS $FILES
+          # (a name can have a blank: "SEN FileTypes")
+          mapfile -t FILES < <(find pkg -type f -exec sh -c 'head -c4 "$1" | grep -q ELF && echo "$1"' _ {} \;)
+          printf '%s\n' "${FILES[@]}"
+          ./abi-check.sh -i "$RUNTIME" -l nightly/lib $LIBS "${FILES[@]}"
