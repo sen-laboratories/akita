@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fetch Haiku host tools (package, package_repo)
+      - name: Fetch Haiku host tools (package)
         run: |
           mkdir -p bin
           curl -sL https://raw.githubusercontent.com/haiku/haiku-toolchains-ubuntu/master/fetch.sh -o fetch.sh
@@ -26,29 +26,25 @@ jobs:
           echo "$(pwd)/bin" >> $GITHUB_PATH
           echo "LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
-      - name: Fetch the newest nightly, its runtime libraries and the packages of Kiri
+      - name: Fetch the newest nightly and the packages of Kiri
         run: |
           set -e
           HAIKU=https://eu.hpkg.haiku-os.org/haiku/master/x86_64/current
-          PORTS=https://eu.hpkg.haiku-os.org/haikuports/master/x86_64/current
           KIRI=https://kiri.sen-labs.org/x86_64
           mkdir -p dl nightly pkg
-          # the names of the packages are in the index of the repository
-          curl -sfL $HAIKU/repo -o dl/haiku.repo
-          curl -sfL $PORTS/repo -o dl/ports.repo
-          curl -sfL $KIRI/repo -o dl/kiri.repo
-          newest() { package_repo list -f "$1" | grep -E "^$2-[0-9r]" | sort -V | tail -1; }
-          HAIKU_PKG=$(newest dl/haiku.repo haiku)
-          GCC_PKG=$(newest dl/ports.repo gcc_syslibs)
-          AKITA_PKG=$(newest dl/kiri.repo akita)
-          TYPES_PKG=$(newest dl/kiri.repo sen_filetypes)
-          echo "haiku: $HAIKU_PKG, gcc_syslibs: $GCC_PKG, akita: $AKITA_PKG, sen_filetypes: $TYPES_PKG" | tee -a $GITHUB_STEP_SUMMARY
-          curl -sfL "$HAIKU/packages/$HAIKU_PKG" -o "dl/$HAIKU_PKG"
-          curl -sfL "$PORTS/packages/$GCC_PKG" -o "dl/$GCC_PKG"
+          # "current" redirects to the folder of the newest nightly, which has its version in the name
+          VERSION=$(curl -sI "$HAIKU/packages/" | tr -d '\r' | sed -n 's|^[Ll]ocation: .*/\(r1~[^/]*\)/packages.*|\1|p')
+          HAIKU_PKG="haiku-$VERSION-1-x86_64.hpkg"
+          # the packages of Kiri are on its page
+          newest() { curl -sf "$KIRI/packages/" | grep -o "href=\"$1-[0-9][^\"]*x86_64.hpkg\"" | sed 's/href="//; s/"$//' | sort -V | tail -1; }
+          AKITA_PKG=$(newest akita)
+          TYPES_PKG=$(newest sen_filetypes)
+          echo "haiku: $HAIKU_PKG, akita: $AKITA_PKG, sen_filetypes: $TYPES_PKG" | tee -a $GITHUB_STEP_SUMMARY
+          [ -n "$VERSION" ] && [ -n "$AKITA_PKG" ] && [ -n "$TYPES_PKG" ]
+          curl -sfL "https://haiku-repository.cdn.haiku-os.org/master/x86_64/$VERSION/packages/$HAIKU_PKG" -o "dl/$HAIKU_PKG"
           curl -sfL "$KIRI/packages/$AKITA_PKG" -o "dl/$AKITA_PKG"
           curl -sfL "$KIRI/packages/$TYPES_PKG" -o "dl/$TYPES_PKG"
           package extract -C nightly "dl/$HAIKU_PKG" lib
-          package extract -C nightly "dl/$GCC_PKG" lib
           package extract -C pkg "dl/$AKITA_PKG" apps
           mkdir -p pkg/types && package extract -C pkg/types "dl/$TYPES_PKG" apps
 
@@ -56,6 +52,10 @@ jobs:
         run: |
           set -e
           ls nightly/lib | head -50
+          # the runtime of the compiler (libgcc_s, libstdc++) is the package gcc_syslibs, not part of the nightly
+          RUNTIME='^(__cxa_|__gxx_|_Unwind_|__register_frame|__deregister_frame|_ZSt|_ZNSt|_ZNKSt|_ZTVSt|_ZTISt|_ZTSSt|_ZTVN10__cxxabiv|_ZTIN10__cxxabiv|_ZTSN10__cxxabiv)'
           # the programs and the libraries that come with them, against the libraries of the nightly
-          ./abi-check.sh -l nightly/lib -l pkg/apps/Akita/lib pkg/apps/Akita/Akita pkg/apps/Akita/lib/libtracker.so
-          for f in pkg/types/apps/*/*; do [ -f "$f" ] && [ -x "$f" ] && ./abi-check.sh -l nightly/lib -l pkg/apps/Akita/lib "$f"; done
+          ./abi-check.sh -i "$RUNTIME" -l nightly/lib -l pkg/apps/Akita/lib pkg/apps/Akita/Akita pkg/apps/Akita/lib/libtracker.so
+          for f in pkg/types/apps/*/*; do
+            if [ -f "$f" ] && [ -x "$f" ]; then ./abi-check.sh -i "$RUNTIME" -l nightly/lib -l pkg/apps/Akita/lib "$f"; fi
+          done
