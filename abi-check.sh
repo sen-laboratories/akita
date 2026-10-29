@@ -11,6 +11,7 @@
 #
 #     ./abi-check.sh bin/Akita bin/lib/libtracker.so                        # against the Haiku that is running (its /boot/system/lib)
 #     ./abi-check.sh -l /tmp/nightly/lib -l bin/lib bin/Akita ...           # against the libraries of other folders (a nightly that was unpacked, the libraries of the package)
+#     ./abi-check.sh -i '^(__cxa_|_Unwind_)' -l ... FILE                     # symbols that match the pattern (egrep) are not looked for (the runtime of the compiler)
 #
 # -l adds a folder with libraries (their *.so*); without -l the folder of the system is used. The files that are checked count as libraries of one another too.
 # Exit status 0: nothing is missing; 1: names of symbols are missing (they are printed, demangled); 2: wrong use. Needs nm (binutils or llvm-nm) and c++filt.
@@ -18,7 +19,7 @@
 # With the nightly in a folder it works on any machine: `package extract -C /tmp/nightly haiku-<version>.hpkg lib` unpacks its libraries (see .github/workflows/nightly.yml).
 
 usage() {
-	echo "usage: $0 [-l <folder with libraries>]... <file>..." >&2
+	echo "usage: $0 [-l <folder with libraries>]... [-i <pattern of symbols to ignore>] <file>..." >&2
 	exit 2
 }
 
@@ -29,9 +30,11 @@ DEMANGLE=cat
 command -v c++filt >/dev/null 2>&1 && DEMANGLE=c++filt
 
 LIBDIRS=()
-while getopts "l:" option; do
+IGNORE=
+while getopts "l:i:" option; do
 	case $option in
 		l) LIBDIRS+=("$OPTARG") ;;
+		i) IGNORE=$OPTARG ;;
 		*) usage ;;
 	esac
 done
@@ -68,6 +71,10 @@ for file in "$@"; do
 	# only the undefined ones that must be there (a weak reference, 'w', may stay open)
 	"$NM" -D --undefined-only "$file" 2>/dev/null | awk '$1 == "U" { print $2 }' | sed 's/@.*//' | sort -u > "$WORK/needed"
 	comm -23 "$WORK/needed" "$WORK/defined" > "$WORK/missing"
+	if [ -n "$IGNORE" ]; then
+		grep -Ev "$IGNORE" "$WORK/missing" > "$WORK/missing.kept"
+		mv "$WORK/missing.kept" "$WORK/missing"
+	fi
 	if [ -s "$WORK/missing" ]; then
 		status=1
 		echo "$file: $(wc -l < "$WORK/missing" | tr -d ' ') symbol(s) not found:"
