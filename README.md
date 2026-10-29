@@ -50,7 +50,18 @@ Akita has the signature of Tracker, so only one of them runs at a time.
 # Package
 
 `./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
-`REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`.
+`REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`. `./build.sh` stops with an error when the build fails (a command of jam is
+`jam -qj4 Tracker`: the options come before the target).
+
+**Haiku version.** Akita links against private classes of Haiku (`libbe`), so a package works with the Haiku that it was built with. The packages of 1.0 require `haiku >= r1~beta6` and `haiku < r1~beta6_hrev60299` (the nightly
+of hrev60299 changed `BPrivate::JobQueue`, and a `libtracker.so` from before it does not load: the desktop is left without a file manager); `pkgman` refuses to install them on a Haiku that does not fit.
+
+# What SEN adds
+
+- *Open related...* and the relation windows (see the [user guide](https://github.com/sen-laboratories/sento/blob/main/docs/user-guide.md)), Command+drag to relate files.
+- An **ontology** (in `~/config/settings/sen/ontologies`) opens as the folder of its Dependency relations.
+- Command+double click on a file opens the [graph](https://github.com/sen-laboratories/sento/blob/main/docs/user-guide.md#the-graph) of the objects and relations, centred on the file; the server asks Akita for the
+  selected file of its active window (`kGetSelection`) when the graph is opened from the Deskbar.
 
 # SEN FileTypes
 
