@@ -90,5 +90,7 @@ windows=$(hey Shoji COUNT Window 2>/dev/null | sed -n 's/.*: *\([0-9]*\) (0x.*/\
 check "a place chosen in the menu of the relation opens in Shoji" test "${windows:-0}" -ge 1
 hey Shoji quit >/dev/null 2>&1
 
+# (the places of this test would be found by every other test of the spatial navigator)
+cd /tmp && rm -rf "$T"
 [ $failed = 0 ] && echo "all ok" || echo FAILED
 exit $failed
