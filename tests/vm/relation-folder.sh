@@ -3,7 +3,8 @@
 # SPDX-FileCopyrightText: 2026 SEN Labs e.U.
 #
 # The folders of relations in Akita, with the dynamic spatial relations (worked out by the spatial navigator when they are opened): the folder of one relation lists the places with their
-# Kind, RCC-8 code and provenance, the files carry the thumbnail of their target, "all relations" does not ask for a remote relation, and a double click opens the place in Shoji.
+# Kind, RCC-8 code and provenance, the files carry the thumbnail of their target, "all relations" does not ask for a remote relation, and a double click on the file of a relation or a click on
+# a place in its menu opens the place in Shoji.
 # Needs, in the Haiku VM: Akita (the running Tracker), sen_server, the ontology sen_ontology_spatial, the plugin spatial-navigator, Shoji, and the BFS indices of the volume of TEST_DIR
 # (create-sen-indices.sh). No network (the places have no Wikidata link). Run it after the packages are installed: sh relation-folder.sh. Prints `ok` or `FAIL` for each check, and `FAILED` at the end.
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -79,6 +80,14 @@ sleep 12
 windows=$(hey Shoji COUNT Window 2>/dev/null | sed -n 's/.*: *\([0-9]*\) (0x.*/\1/p' | head -1)
 check "Shoji shows the place" test "${windows:-0}" -ge 1
 screenshot -s -f png "$T/double-click.png" >/dev/null 2>&1
+hey Shoji quit >/dev/null 2>&1
+
+# ---- a click on a place in the menu of the relation hands the place itself to the navigator of the relation type: it opens it in Shoji as well
+g++ -std=c++20 -Wno-multichar -o launchrefs "$HERE/launchrefs.cpp" -lbe 2>&1 | grep error
+./launchrefs application/x-vnd.sen-plugin.sen-labs.spatial-navigator "$T/Big" >/dev/null 2>&1
+sleep 12
+windows=$(hey Shoji COUNT Window 2>/dev/null | sed -n 's/.*: *\([0-9]*\) (0x.*/\1/p' | head -1)
+check "a place chosen in the menu of the relation opens in Shoji" test "${windows:-0}" -ge 1
 hey Shoji quit >/dev/null 2>&1
 
 [ $failed = 0 ] && echo "all ok" || echo FAILED
