@@ -24,7 +24,11 @@ addattr -t mime BEOS:TYPE entity/x-vnd.sen-labs.entity.location Here
 addattr -t string dc:title Here Here
 addattr -t double schema:latitude -- 48.1985 Here; addattr -t double schema:longitude -- 16.3010 Here
 
+start=$(date +%s)
 ./openrel "$T/Here" $POI
+took=$(( $(date +%s) - start ))
+# (the folder opens at once and is filled when the answer comes: the request is not held up by the navigator)
+check "Akita answers at once, not after the navigator (${took} s)" test "$took" -le 8
 # (the first answer of Overpass can take half a minute)
 view=
 for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18; do
@@ -35,7 +39,8 @@ done
 check "the folder of the relation is made" test -n "$view" -a -d "$view"
 count=$(ls "$view" 2>/dev/null | wc -l | tr -d ' ')
 check "it lists points of interest ($count)" test "$count" -ge 10
-first=$(ls "$view" | head -n1)
+first=$(ls "$view" | grep -v 'Fetching relations' | head -n1)
+check "the placeholder of the fetch is gone" test ! -e "$view/Fetching relations…"
 check "the provenance is the Overpass API" is "$(attr prov:wasAttributedTo "$view/$first")" https://wiki.openstreetmap.org/wiki/Overpass_API
 check "the label is point of interest" is "$(attr SEN:REL:Label "$view/$first")" "point of interest"
 check "the file knows its target" test -n "$(attr SEN:REL:TRG "$view/$first")"
