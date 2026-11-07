@@ -4,7 +4,7 @@
 #
 # The relation "nearby" through the whole chain, against the public Overpass API (needs the network, the first answer can take half a minute): Akita asks the SEN server for the
 # relation at a Location, the server asks the spatial navigator, which asks Overpass and makes a place in the Library for each named thing; the folder of the relation lists them with the
-# provenance, and "all relations" does not ask for it (it is remote). The places that were made are removed at the end.
+# provenance, and "all relations" has an empty folder for it that is filled when it is entered (it is remote). The places that were made are removed at the end.
 # Needs, in the Haiku VM: Akita (the running Tracker), sen_server, sen_ontology_spatial (with nearby), the plugin spatial-navigator, the BFS indices of the volume of TEST_DIR.
 HERE=$(cd "$(dirname "$0")" && pwd)
 T=${TEST_DIR:-/Develop/test}/_akita-poi-folder
@@ -47,12 +47,30 @@ check "the label says what it is, not the name of the relation" test -n "$(attr 
 check "the distance is a number of metres" test "$(attr SEN:REL:Distance "$view/$first")" -ge 0
 check "the file knows its target" test -n "$(attr SEN:REL:TRG "$view/$first")"
 
-# "all relations" does not ask for a remote relation
+# "all relations": the folder of the remote relation is there, empty, and asks for the relation when it is entered (and not again within the cache time)
+g++ -std=c++20 -Wno-multichar -I/boot/home/config/non-packaged/develop/headers -o launchrefs "$HERE/launchrefs.cpp" -lbe 2>&1 | grep error
+rm -rf /tmp/sen/*/all
 ./openrel --all "$T/Here"
-sleep 6
-all=$(ls -dt /tmp/sen/*/all/* 2>/dev/null | head -1)
-check "the folder of all relations has no nearby folder" test -n "$all" -a ! -e "$all/Nearby" -a ! -e "$all/nearby"
-
+for i in 1 2 3 4 5 6 7 8 9 10; do
+	sleep 2
+	all=$(ls -dt /tmp/sen/*/all/* 2>/dev/null | head -1)
+	[ -n "$all" ] && ls -d "$all"/*earby* >/dev/null 2>&1 && break
+done
+nearby=$(ls -d "$all"/*earby* 2>/dev/null | head -n1)
+check "the folder of all relations has a folder for nearby" test -n "$nearby" -a -d "$nearby"
+check "the folder is of the type of the relation" is "$(attr BEOS:TYPE "$nearby")" $POI
+check "it is empty until it is entered" test "$(ls "$nearby" | wc -l | tr -d ' ')" -eq 0
+./launchrefs application/x-vnd.Be-TRAK "$nearby" >/dev/null
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18; do
+	sleep 5
+	[ "$(ls "$nearby" 2>/dev/null | grep -vc 'Fetching relations')" -ge 10 ] && break
+done
+count=$(ls "$nearby" 2>/dev/null | grep -vc 'Fetching relations')
+check "entering the folder fetches the relations ($count)" test "$count" -ge 10
+# (entered again within the cache time: not fetched again - what was taken away stays away)
+gone=$(ls "$nearby" | head -n1); rm -f "$nearby/$gone"
+./launchrefs application/x-vnd.Be-TRAK "$nearby" >/dev/null; sleep 8
+check "within the cache time it is not fetched again" test ! -e "$nearby/$gone" -a ! -e "$nearby/Fetching relations…"
 
 # clean up: the places that were made (a link to OpenStreetMap, made since the start)
 IFS='
