@@ -84,6 +84,12 @@ check "the folder of the group is made" test -n "$grp" -a -d "$grp"
 gnearby=$(ls -d "$grp"/*earby* 2>/dev/null | head -n1)
 check "it has a folder for nearby, empty" test -n "$gnearby" -a "$(ls "$gnearby" | wc -l | tr -d ' ')" -eq 0
 check "it has no relation of another group" test "$(ls "$grp" | wc -l | tr -d ' ')" -ge 1
+# (the folders of spatial relations show a globe in a folder: the icon that the relation has for its folder, SEN:ICON:FOLDER of the type)
+has_icon() { listattr "$1" | grep -q BEOS:ICON; }
+icon_sum() { catattr -d BEOS:ICON "$1" | md5sum; }
+check "the folder of the group has the icon of a spatial folder" has_icon "$grp"
+check "so has the folder of the relation" has_icon "$gnearby"
+check "and it is the same icon" is "$(icon_sum "$grp")" "$(icon_sum "$gnearby")"
 
 # a kept folder: copied (with its attributes) to a place that stays, it is not registered, and it fetches from its attributes when it is opened
 check "the folder knows where its relations come from" test -n "$(attr SEN:REL:SRC "$gnearby")"
