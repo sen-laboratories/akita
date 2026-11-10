@@ -54,7 +54,7 @@ jobs:
           set -e
           ls nightly/lib | head -50
           # the runtime of the compiler (libgcc_s, libstdc++: std::, operator new and delete, typeinfo of the basic types) is the package gcc_syslibs, not part of the nightly
-          RUNTIME='^(__cxa_|__gxx_|__dynamic_cast|_Unwind_|__register_frame|__deregister_frame|_ZN?K?S[a-z]|_ZTVSt|_ZTISt|_ZTSSt|_ZTTSt|_ZTVN10__cxxabiv|_ZTIN10__cxxabiv|_ZTI[a-z]$|_Zd[al]Pv|_Zn[aw][mj])'
+          RUNTIME='^(__cxa_|__gxx_|__dynamic_cast|_Unwind_|__register_frame|__deregister_frame|_ZN?K?S[a-z]|_ZT[VIST]N?St|_ZTVN10__cxxabiv|_ZTIN10__cxxabiv|_ZTI[a-z]$|_Zd[al]Pv|_Zn[aw][mj])'
           # every program and library of the packages, against the libraries of the nightly and the libraries that come with the packages
           LIBS=""
           for d in $(find pkg -type d -name lib); do LIBS="$LIBS -l $d"; done
