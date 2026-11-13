@@ -28,7 +28,7 @@ trap 'kill $blank 2>/dev/null' EXIT
 g++ -std=c++20 -Wno-multichar -I/boot/home/config/non-packaged/develop/headers -o openrel "$HERE/openrel.cpp" -lbe 2>&1 | grep error
 [ -x ./openrel ] || { echo "FAIL openrel was not built"; exit 1; }
 
-square() { # square <name> <x0> <y0> <x1> <y1>: a place with an outline, as SUESS keeps them
+square() { # square <name> <x0> <y0> <x1> <y1>: a place with an outline, as Spaces keeps them
 	name=$1; x0=$2; y0=$3; x1=$4; y1=$5
 	touch "$name"
 	addattr -t mime BEOS:TYPE entity/x-vnd.sen-labs.entity.place "$name"
