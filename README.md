@@ -49,6 +49,8 @@ Akita has the signature of Tracker, so only one of them runs at a time.
 
 # Package
 
+The steps in the VM (which tree to build in, the environment of jam, revisions, publishing) are in [docs/build-and-release.md](docs/build-and-release.md).
+
 `./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
 `REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`. `./build.sh` stops with an error when the build fails (a command of jam is
 `jam -qj4 Tracker`: the options come before the target).
