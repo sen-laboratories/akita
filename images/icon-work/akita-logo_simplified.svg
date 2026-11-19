@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Box: Back Wall & Interior -->
+  <g id="box-back" stroke="#513624" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Top rim of back-left wall -->
+    <path d="M55 196 L168 140 L166 160 L73 204 Z" fill="#E3B987" stroke-width="5" />
+    <!-- Outer left upper strip -->
+    <path d="M55 196 L73 204 L73 244 L54 250 Z" fill="#C7905D" stroke-width="5" />
+    <!-- Dark interior wall -->
+    <path d="M73 204 L162 160 L152 210 L114 268 L73 244 Z" fill="#8E6342" stroke-width="5" />
+  </g>
+
+  <!-- Akita Dog -->
+  <g id="akita" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Base silhouette fill -->
+    <path d="M110 264 L152 174 L174 126 C188 94 206 62 220 62 C230 62 238 78 244 92 L288 72 C312 46 340 16 352 16 C364 16 367 52 365 105 C382 118 394 134 396 156 L396 180 C408 186 420 192 424 202 C428 214 426 232 418 244 C408 260 392 270 376 276 L376 306 L253 364 L158 318 Z" fill="#F8F5EE" />
+
+    <!-- Fur Shading (Light Taupe) -->
+    <!-- Back of right ear -->
+    <path d="M288 72 C312 46 340 16 350 18 L318 86 Z" fill="#DDD8CE" />
+    <!-- Left ear outer back + left neck & chest shadow -->
+    <path d="M174 126 C188 94 206 62 218 64 L202 176 L248 128 L278 142 L242 198 L242 260 C254 276 272 288 290 290 L318 276 L356 276 L356 312 L284 344 C282 326 270 314 242 300 L242 326 C206 314 176 286 152 252 L148 282 L110 264 L152 174 Z" fill="#DDD8CE" />
+    <!-- Muzzle / under-nose shadow -->
+    <path d="M390 222 L412 224 L424 206 C426 222 424 236 416 246 C404 262 390 270 374 275 L380 260 L390 248 Z" fill="#C5BFB5" />
+
+    <!-- Inner Ears (Soft Peach) -->
+    <path d="M353 38 L330 86 L354 98 Z" fill="#E3C5B3" />
+    <path d="M225 86 L245 126 L215 160 C212 134 214 108 225 86 Z" fill="#E3C5B3" />
+
+    <!-- Subtle Forehead Fur Crease -->
+    <path d="M276 98 L330 124 L335 147 M297 136 L330 124" fill="none" stroke="#C5BFB5" stroke-width="3.5" />
+    <path d="M336 118 L352 109" fill="none" stroke="#513624" stroke-width="3.5" />
+
+    <!-- Ear & Cheek Contour Strokes -->
+    <path d="M350 18 L318 86 M288 72 L365 105" fill="none" stroke="#513624" stroke-width="4" />
+    <path d="M215 76 C202 108 199 144 202 176 L254 118" fill="none" stroke="#513624" stroke-width="4" />
+    <path d="M174 126 L176 164 M152 174 L151 246 M273 153 L246 194 M242 204 L243 286 M190 272 C218 284 248 298 270 314" fill="none" stroke="#513624" stroke-width="3.8" />
+    <path d="M176 165 L226 190" fill="none" stroke="#C5BFB5" stroke-width="3.5" />
+
+    <!-- Eyes -->
+    <path d="M291 192 L308 175 L318 178 L328 188 L308 196 Z" fill="#513624" />
+    <path d="M364 152 L376 148 L374 165 L366 169 L362 162 Z" fill="#513624" />
+
+    <!-- Nose -->
+    <path d="M382 204 C382 198 406 190 416 191 C424 192 426 202 422 210 C416 220 412 228 402 228 C388 228 380 218 382 204 Z" fill="#513624" />
+
+    <!-- Mouth & Smile -->
+    <path d="M408 226 L408 242 M408 240 L422 244 M408 240 C392 256 374 264 352 264 C338 264 328 258 320 254" fill="none" stroke="#513624" stroke-width="5.5" />
+    <circle cx="320" cy="254" r="4.5" fill="#513624" />
+
+    <!-- Main Dog Outline -->
+    <path d="M110 264 L152 174 L174 126 C188 94 206 62 220 62 C230 62 238 78 244 92 L288 72 C312 46 340 16 352 16 C364 16 367 52 365 105 C382 118 394 134 396 156 L396 180 C408 186 420 192 424 202 C428 214 426 232 418 244 C408 260 392 270 376 276 L316 276 L288 290 M376 276 L376 306" fill="none" stroke="#513624" stroke-width="5.5" />
+  </g>
+
+  <!-- Wooden Box: Front Faces, Rim & Kanji -->
+  <g id="box-front" stroke="#513624" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Inner right corner piece behind dog -->
+    <path d="M376 276 L406 284 L376 300 Z" fill="#AF7A4D" stroke-width="4.5" />
+
+    <!-- Front-Left Face -->
+    <path d="M54 250 L134 290 L154 326 L253 374 L253 498 L62 405 C56 402 54 396 54 388 Z" fill="#C7905D" stroke-width="5.5" />
+
+    <!-- Front-Right Face (Light base) -->
+    <path d="M253 374 L438 284 L438 408 L253 498 Z" fill="#E3B987" stroke-width="5.5" />
+    <!-- Front-Right Face (Diagonal Shadow) -->
+    <path d="M253 430 L398 332 L438 352 L438 408 L253 498 Z" fill="#C7905D" stroke="none" />
+    <!-- Redraw crisp Front-Right outline over shadow -->
+    <path d="M253 374 L438 284 L438 408 L253 498 Z" fill="none" stroke="#513624" stroke-width="5.5" />
+
+    <!-- Top Rim (Front-Left + Front-Right) -->
+    <path d="M54 250 L73 244 L150 282 L168 316 L253 356 L406 284 L384 273 L402 266 L436 282 C438 283 438 284 438 284 L253 374 L154 326 L134 290 Z" fill="#E3B987" stroke-width="5" />
+
+    <!-- Kanji "秋田" (Isometric Perspective) -->
+    <g fill="none" stroke="#513624" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 秋 -->
+      <path d="M70 315 L100 321 M70 336 L102 352 M87 321 L87 401 M87 346 L70 374 M87 354 L100 375" />
+      <path d="M112 346 L107 366 M146 361 L137 378 M125 329 L125 366 C125 384 116 398 104 406 M125 368 C132 392 140 412 148 426" />
+      <!-- 田 -->
+      <path d="M167 358 L167 438 M167 360 L229 390 L229 468 M167 431 L229 461 M198 375 L198 446 M167 395 L229 425" />
+    </g>
+  </g>
+
+  <!-- 3D Bone Handle -->
+  <g id="bone" stroke="#513624" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Extruded 3D Side (Medium Tan Base) -->
+    <path d="M320 392 L294 379 C280 385 276 410 288 423 C276 435 276 454 290 459 L316 472 L348 438 L412 406 L436 419 L450 414 L456 336 L422 322 C406 318 394 334 394 354 L334 386 Z" fill="#D7AE86" stroke-width="5.5" />
+
+    <!-- Extruded 3D Top Bevels (Light Tan Highlights) -->
+    <path d="M294 379 C304 374 316 376 326 382 L344 394 L320 392 Z" fill="#E9CDA8" stroke="none" />
+    <path d="M334 386 L394 354 C394 334 408 320 424 323 L452 336 L420 368 L348 404 Z" fill="#E9CDA8" stroke="none" />
+
+    <!-- Redraw crisp 3D extrusion outline -->
+    <path d="M326 389 L302 377 C286 374 274 398 286 422 C274 436 276 454 290 460 L316 472 M334 386 L394 354 C394 334 408 318 424 323 L452 336 M412 406 L436 419" fill="none" stroke="#513624" stroke-width="5.5" />
+
+    <!-- Bone Front Face (Pale Cream) -->
+    <path d="M348 404 L420 368 C420 344 442 326 456 336 C466 344 464 364 452 374 C466 380 466 402 450 414 C436 424 422 418 420 402 L348 438 C348 458 332 476 316 472 C304 468 304 448 316 436 C302 428 304 402 320 392 C334 384 348 390 348 404 Z" fill="#EAE1BD" stroke-width="5" />
+  </g>
+</svg>
