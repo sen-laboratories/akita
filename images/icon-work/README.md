@@ -1,11 +1,9 @@
 # Akita icon work
 
-`akita-logo_simplified.svg` is the logo as the owner traced it (low complexity, high fidelity). The icon has two drawings in one HVIF, chosen by the size (the level of detail is size / 64):
+`akita-logo_simplified.svg` is the Akita drawing of the owner: a Shiba in a wooden box with a bone, flat colours and brown outlines, made for the icon (64 x 64). The whole icon comes from this one drawing, at every size.
 
-* **under about 19 px (16): a pixel icon**, `akita-pixel-16.svg` (a 16x16 grid in `pixel.py`: the cream Shiba face in its box; edit the grid and run `python3 pixel.py`).
-* **from about 19 px (24, 32 and up): the logo**, `akita-flat.svg`: `python3 flat.py akita-logo_simplified.svg akita-flat.svg <tolerance> <minarea>` (needs `shapely`) flattens the SVG (strokes to outlines, clip paths cut,
-  gradients to their middle colour, neighbours of one colour merged) into plain filled paths: 30 shapes, 63 paths.
+`python3 flat.py akita-logo_simplified.svg akita-flat.svg 0.05 0` (needs `shapely`) flattens it (strokes to outlines, shapes merged by colour) into plain filled paths: 19 shapes. `lodtool akita.hvif akita-flat.svg 99 0 4 0`
+(`lodtool.cpp`, built against hvif-tools) makes the HVIF (10 KB; an `.iom` name makes the file for Icon-O-Matic). The hex of `akita.hvif` is the `vector_icon` of `senryu/src/apps/tracker/Tracker.rdef`.
+`hvifrender.cpp` renders an HVIF with the renderer of Haiku at 16, 32, 48, 64 and 128 px; `akita-renders-haiku.png` shows them.
 
-`lodtool akita.hvif akita-pixel-16.svg 99 0 0.3 0  akita-flat.svg 0 0.3 4 0.3` (`lodtool.cpp`, built against hvif-tools; for each file: the number of base shapes, the minimum level of the base, the maximum of all
-its shapes, the minimum of the detail) puts them in one icon (an `.iom` name makes the file for Icon-O-Matic, where the levels are the "min/max visibility" of the shapes). `akita.hvif` is 15 KB; its hex is the
-`vector_icon` of `senryu/src/apps/tracker/Tracker.rdef`. `hvifrender.cpp` renders an HVIF with the renderer of Haiku at 16, 32, 48, 64 and 128 px (it honours the level of detail); `akita-renders-haiku.png` shows them.
+(Earlier versions had a pixel icon for small sizes and the traced logo for large ones: one drawing replaces both.)

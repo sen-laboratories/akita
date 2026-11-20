@@ -13,6 +13,10 @@ AKITA_DIR="$PWD"
 
 printf "Building Tracker from $TRACKER_SRC_DIR...\n"
 
+# The headers of sento (<sen/...>) are installed outside the tree: jam does not see them change. A class that is all in a header (the lists of values, FilterPopUpMenu) must have one layout in
+# every object that uses it, or the program crashes when the linker picks the inline code of another object: what includes them is compiled again.
+grep -rl '<sen/' "$TRACKER_SRC_DIR" --include='*.cpp' | xargs touch
+
 if (cd "$TRACKER_SRC_DIR" && jam -qj$(nproc) Tracker); then
 	printf "\nDONE.\n"
 else
