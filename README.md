@@ -49,9 +49,17 @@ Akita has the signature of Tracker, so only one of them runs at a time.
 
 # Package
 
+The steps in the VM (which tree to build in, the environment of jam, revisions, publishing) are in [docs/build-and-release.md](docs/build-and-release.md).
+
 `./package.sh` makes the package from `bin/Akita` and `bin/lib/libtracker.so` (`./build.sh` builds Tracker in the tree of senryu, `./install.sh` copies the result to `bin/`);
 `REVISION=2 ./package.sh` for a new revision. The file for the launch daemon and the scripts that the package installs are in `package/`. `./build.sh` stops with an error when the build fails (a command of jam is
 `jam -qj4 Tracker`: the options come before the target).
+
+**Updates.** A running Akita keeps the old files when its package is updated. It watches the folders of the packages for a package of Akita (`akita-...hpkg`), looks a few times at its own program file until the package is active, and asks once with a small alert (*Later* / *Restart*) if the file is another one now; *Restart* starts Akita again after a pause and quits this one (its open windows are written as always and opened again by the new one). The code is `senryu/src/kits/tracker/AkitaUpdateWatcher.h`.
+
+**Editing an attribute in the list.** In the list view the whole cell of an editable attribute is the place to click, whatever its value is (an empty one too), as in a spreadsheet; the name keeps the area of its text, so that the space after it still starts a rubber band selection. A click on the cell selects the file, outlines the cell at once (a dotted grey line) and starts the edit after a short pause (a double click that is faster still opens the file; Shift/Command clicks only select); the field fills the cell. The name is renamed as before: the first click selects, a second one, after the double click time, edits. The pause is a timer of its own, no longer the slow pulse of the window.
+
+**The control that fits the attribute.** `BTextWidget` (senryu `src/kits/tracker`) looks at the attribute text of a cell: a boolean (`IsCheckbox()`) is drawn as a check box (`BControlLook::DrawCheckBox`, greyed when the column or the volume is read-only) and `StartEdit` turns it over instead of opening an editor; a time or a day (`TimeKind()`: 2 time, 1 day, from `display_as = date` that the generator writes for `range: date`) gets an arrow in its edit field (the `sen::FilterPopUpMenu` arrow with an arrow message) that opens `SenDatePicker.h` (a window that never takes the focus, so the edit is not ended by the deactivation of the file window); the start and the end of a thing are read and written through `sen::timeattr` (`SenTimeAttributes.h`). The Find window (`FindPanel.cpp`) asks for a time attribute with `PushInt64` (BFS reads a date in words as 32 bits) and has the same arrow.
 
 **Haiku version.** Akita links against private classes of Haiku (`libbe`), so a package works with the Haiku that it was built with. SEN follows the nightlies: the packages are built on a recent nightly and require `haiku >= r1~beta6_hrev60299_1` (the nightly hrev60299_3 gave `BPrivate::JobQueue` a constructor with a parameter, and a `libtracker.so` built before it does not load); there is no upper limit, so `pkgman` does not hold your Haiku back. Haiku compares the pre-release part of a version as text (`_11` is *less* than `_3`), which is why the bound is the `_1`. When a nightly breaks Akita, `abi-check.sh` says so before anybody installs it (see below), and a new build follows.
 
